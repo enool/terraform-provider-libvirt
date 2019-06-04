@@ -299,6 +299,16 @@ func resourceLibvirtDomain() *schema.Resource {
 							Optional: true,
 							ForceNew: true,
 						},
+						"log_file": {
+							Type:     schema.TypeString,
+							Optional: true,
+							ForceNew: true,
+						},
+						"log_append": {
+							Type:     schema.TypeString,
+							Optional: true,
+							ForceNew: true,
+						},
 					},
 				},
 			},

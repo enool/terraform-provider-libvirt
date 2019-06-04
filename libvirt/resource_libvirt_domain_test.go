@@ -816,6 +816,43 @@ func TestAccLibvirtDomain_Filesystems(t *testing.T) {
 	})
 }
 
+func TestAccLibvirtDomain_ConsoleLogging(t *testing.T) {
+	var domain libvirt.Domain
+	randomDomainName := acctest.RandString(10)
+
+	tempFile, err := ioutil.TempFile("", "serial.log")
+	if err != nil {
+		t.Skipf("Can't create temporary file: %s", err)
+	}
+
+	var config = fmt.Sprintf(`
+	resource "libvirt_domain" "%s" {
+		name = "%s"
+		console {
+			type     = "pty"
+			log_file = %s
+		}
+	}`, randomDomainName, randomDomainName, tempFile.Name())
+
+	resource.Test(t, resource.TestCase{
+		PreCheck:     func() { testAccPreCheck(t) },
+		Providers:    testAccProviders,
+		CheckDestroy: testAccCheckLibvirtDomainDestroy,
+		Steps: []resource.TestStep{
+			{
+				Config: config,
+				Check: resource.ComposeTestCheckFunc(
+					testAccCheckLibvirtDomainExists("libvirt_domain."+randomDomainName, &domain),
+					resource.TestCheckResourceAttr(
+						"libvirt_domain."+randomDomainName, "console.0.type", "pty"),
+					resource.TestCheckResourceAttr(
+						"libvirt_domain."+randomDomainName, "console.0.log_file", tempFile.Name()),
+				),
+			},
+		},
+	})
+}
+
 func TestAccLibvirtDomain_Consoles(t *testing.T) {
 	var domain libvirt.Domain
 	randomDomainName := acctest.RandString(10)

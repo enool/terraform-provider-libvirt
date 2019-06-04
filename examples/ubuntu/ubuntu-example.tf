@@ -55,6 +55,8 @@ resource "libvirt_domain" "domain-ubuntu" {
     type        = "pty"
     target_port = "0"
     target_type = "serial"
+    log_file    = "${path.module}/serial.log"
+    log_append  = true
   }
 
   console {

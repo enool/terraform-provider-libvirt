@@ -421,6 +421,14 @@ func setConsoles(d *schema.ResourceData, domainDef *libvirtxml.Domain) {
 				}
 			}
 		}
+		if logFile, ok := d.GetOk(prefix + ".log_file"); ok {
+			console.Log = &libvirtxml.DomainChardevLog{
+				File: logFile.(string),
+			}
+			if d.Get(prefix + ".log_append").(bool) {
+				console.Log.Append = "on"
+			}
+		}
 		domainDef.Devices.Consoles = append(domainDef.Devices.Consoles, console)
 	}
 }
